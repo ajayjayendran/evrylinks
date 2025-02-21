@@ -3,10 +3,10 @@ import cors from "@fastify/cors";
 import registerRoutes from "./routes";
 import db from "../src/database/config";
 
-const fastify = Fastify({ logger: true });
+const app = Fastify({ logger: true });
 
 // Register CORS
-fastify.register(cors, { origin: "*" });
+app.register(cors, { origin: "*" });
 
 // Health check for DB connection
 (async () => {
@@ -19,18 +19,14 @@ fastify.register(cors, { origin: "*" });
   }
 })();
 
-registerRoutes(fastify);
+registerRoutes(app);
 
-// Start Server
-const start = async () => {
-  try {
-    await fastify.listen({ port: 3000 });
-    console.log(`🚀 Server running at http://localhost:3000`);
-    console.log(`📜 API Docs available at http://localhost:3000/docs`);
-  } catch (err) {
-    fastify.log.error(err);
+const PORT = process.env.PORT || 3000;
+app.listen({ port: Number(PORT) }, (err, address) => {
+  if (err) {
+    console.error(err);
     process.exit(1);
   }
-};
-
-start();
+  console.log(`🚀 Server running at ${address}`);
+  console.log(`📜 API Docs available at ${address}/docs`);
+});

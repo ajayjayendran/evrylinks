@@ -23,6 +23,7 @@
     "zod": "^3.22.2"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.9.0",
     "@types/pg": "^8.11.11",
     "tsx": "^4.19.2",
