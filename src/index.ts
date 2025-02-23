@@ -26,8 +26,9 @@ app.get("/health", (_, res) => {
 registerRoutes(app);
 
 const PORT = process.env.PORT || 4000;
+const HOST = "0.0.0.0";
 
-app.listen({ port: Number(PORT) }, (err, address) => {
+app.listen({ port: Number(PORT), host: HOST }, (err, address) => {
   if (err) {
     console.error(err);
     process.exit(1);
