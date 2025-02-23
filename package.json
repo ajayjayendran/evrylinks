@@ -17,6 +17,7 @@
     "fastify": "^4.22.0",
     "fastify-cookie": "^5.7.0",
     "jsonwebtoken": "^9.0.2",
+    "open-graph-scraper": "^6.9.0",
     "pg": "^8.13.3",
     "postgres": "^3.4.5",
     "url-metadata": "^4.1.1",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20.9.0",
     "@types/pg": "^8.11.11",
     "tsx": "^4.19.2",
