@@ -4,6 +4,7 @@ import {
   text,
   timestamp,
   uniqueIndex,
+  uuid,
   type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { SQL, sql } from "drizzle-orm";
@@ -11,7 +12,7 @@ import { SQL, sql } from "drizzle-orm";
 export const users = pgTable(
   "users",
   {
-    id: serial("id").primaryKey(),
+    id: uuid("id").primaryKey().defaultRandom(),
     email: text("email").unique().notNull(),
     password: text("password").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),

@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
-import { getBookmarkHandler } from "../handlers/bookmark";
+import { getMetadataHandler } from "../handlers/metadata";
 
 export default async function metadataRoutes(fastify: FastifyInstance) {
-  fastify.post("/meta", { handler: getBookmarkHandler });
+  fastify.post("/meta", { handler: getMetadataHandler });
 }

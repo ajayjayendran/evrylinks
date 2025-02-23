@@ -45,5 +45,9 @@ export const loginHandler = async (req: FastifyRequest, res: FastifyReply) => {
     { expiresIn: "1d" }
   );
 
-  return res.send({ token, message: "Login successfully!" });
+  return res.send({
+    token,
+    userId: user[0].id,
+    message: "Login successfully!",
+  });
 };

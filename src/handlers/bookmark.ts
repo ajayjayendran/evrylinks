@@ -1,10 +1,13 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { metadataRequestSchema } from "../schemas/metadataSchema";
 import { successResponse, handleError } from "../utils/response";
 import { verifyToken } from "../utils/token";
-import ogs from "open-graph-scraper";
+import { getMetaData } from "../utils/meta";
+import { bookmarkSchema, getBookmarkSchema } from "../schemas/bookmark";
+import db from "../database/config";
+import { bookmarks } from "../models/bookmark";
+import { eq } from "drizzle-orm";
 
-export const getBookmarkHandler = async (
+export const getBookmarksHandler = async (
   req: FastifyRequest,
   res: FastifyReply
 ) => {
@@ -13,21 +16,56 @@ export const getBookmarkHandler = async (
   if (!userId) return res.code(401).send({ error: "Unauthorized" });
 
   try {
-    const payload = metadataRequestSchema.parse(req.body);
+    const payload = getBookmarkSchema.parse(req.body);
 
-    const response = await ogs({
-      url: payload.url,
-      fetchOptions: {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36",
-        },
-      },
-      onlyGetOpenGraphInfo: true,
-    });
-    if (response) res.send(successResponse(response));
+    let result = await db
+      .select()
+      .from(bookmarks)
+      .where(eq(bookmarks.userId, payload.userId))
+      .execute();
+
+    if (payload.tag) {
+      result = result.filter((value) => value.tag === payload.tag);
+    }
+    return res.send(successResponse(result));
   } catch (error) {
     console.log(error);
     res.status(500).send(handleError(error));
+  }
+};
+
+export const saveBookmarkHandler = async (
+  req: FastifyRequest,
+  res: FastifyReply
+) => {
+  const userId = verifyToken(req);
+
+  if (!userId) return res.code(401).send({ error: "Unauthorized" });
+
+  try {
+    const payload = bookmarkSchema.parse(req.body);
+    const meta = await getMetaData(payload.url);
+    const {
+      ogTitle = "",
+      ogDescription = "",
+      ogImage = [{ url: "" }],
+    } = meta.result;
+
+    const values = {
+      url: payload.url,
+      tag: payload.tag,
+      meta_description: ogDescription || "",
+      meta_image: ogImage[0].url || "",
+      meta_title: ogTitle || "",
+      title: payload.title,
+      userId: payload.userId,
+      note: payload.note,
+    };
+
+    await db.insert(bookmarks).values(values);
+
+    return res.send(successResponse(values));
+  } catch (error) {
+    console.log(error);
   }
 };
