@@ -19,9 +19,14 @@ app.register(cors, { origin: "*" });
   }
 })();
 
+app.get("/health", (_, res) => {
+  res.send("Hello World!");
+});
+
 registerRoutes(app);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
+
 app.listen({ port: Number(PORT) }, (err, address) => {
   if (err) {
     console.error(err);
